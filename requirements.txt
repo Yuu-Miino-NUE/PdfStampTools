@@ -1,0 +1,4 @@
+# pip install -r requirements.txt
+pypdf2==2.6.0
+reportlab==3.6.11
+pillow==9.2.0 # via reportlab

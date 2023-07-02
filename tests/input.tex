@@ -1,0 +1,24 @@
+\documentclass[a4paper,twocolumn]{article}
+
+\usepackage{newtxtext}
+\usepackage[top=25mm, bottom=37mm, left=25mm, right=25mm]{geometry}
+\usepackage{lipsum}
+\pagestyle{empty}
+
+\title{Some article to say something}
+\author{Yuu Miino}
+\date{\today}
+
+\begin{document}
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+\thispagestyle{empty}
+\begin{abstract}
+This abstract presents a collection of texts that transcend traditional notions of meaning. These 300-400 word compositions defy conventional understanding, challenging readers to explore new realms of interpretation. With no intended significance, they serve as exercises in linguistic exploration and imaginative freedom. From playful wordplay to surreal narratives, these texts offer a departure from the ordinary, inviting readers to engage with language in unconventional ways. Prepare to embark on a journey of nonsensical wonderment as you delve into this abstract collection.
+It's all a lie, and we write the output of the lipsum command here.
+\end{abstract}
+\end{@twocolumnfalse}
+]
+\lipsum[1-30]
+\end{document}
