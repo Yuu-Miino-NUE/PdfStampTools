@@ -1,8 +1,9 @@
 import io
-from typing import Literal, BinaryIO
+from pathlib import Path
+from typing import Literal, BinaryIO, IO
 from collections.abc import Callable
 
-from PyPDF2 import PdfWriter, PdfReader, PageObject
+from pypdf import PdfWriter, PdfReader, PageObject
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import utils
@@ -61,7 +62,7 @@ def _get_page_size(page: PageObject) -> tuple[float, float]:
 def stamp_pdf(
     input: str,
     output: str,
-    first_page_overlay: PdfReader | None = None,
+    first_page_overlay: IO | Path | None = None,
     encl: NumberEnclosure = "em_dash",
     start_num: int = 1,
     num_height: float = 10.5 * mm,
@@ -89,7 +90,7 @@ def stamp_pdf(
     """
     if first_page_overlay is not None:
         try:
-            _fpo = first_page_overlay.pages[0]
+            _fpo = PdfReader(first_page_overlay).pages[0]
         except:
             raise FileExistsError("No header logo PDF found. Please create one first.")
     else:
@@ -108,7 +109,6 @@ def stamp_pdf(
         # Put logo on first page of overlay if exist
         if _fpo is not None:
             all_overlays[0].merge_page(_fpo)
-            all_overlays[0].compress_content_streams()
 
         # Put numbers on the base page and add it to the output
         writer = PdfWriter()
@@ -200,9 +200,9 @@ def put_logo_with_text(
     _canvas.save()
 
 
-def _put_item(pdf_name: str, fun: Callable[[canvas.Canvas], None]):
+def _put_item(input: IO | Path, fun: Callable[[canvas.Canvas], None]):
     try:
-        present_pdf = PdfReader(pdf_name).pages[0]
+        present_pdf = PdfReader(input).pages[0]
     except:
         raise FileExistsError("No PDF found at input.")
 
@@ -214,16 +214,15 @@ def _put_item(pdf_name: str, fun: Callable[[canvas.Canvas], None]):
 
     # Merge canvas to loaded pdf
     present_pdf.merge_page(PdfReader(buffer).pages[0])
-    present_pdf.compress_content_streams()
 
     # Overwrite to output file
     writer = PdfWriter()
     writer.add_page(present_pdf)
-    writer.write(open(pdf_name, "wb"))
+    writer.write(input)
 
 
 def put_image(
-    pdf_name: str,
+    into: IO | Path,
     img_file: str,
     img_width: float,
     x: float,
@@ -239,11 +238,11 @@ def put_image(
             mask="auto",
         )
 
-    _put_item(pdf_name, fun)
+    _put_item(into, fun)
 
 
 def put_text(
-    pdf_name: str,
+    into: IO | Path,
     text_lines: list[str],
     x: float,
     y: float,
@@ -254,4 +253,4 @@ def put_text(
         for i, l in enumerate(text_lines):
             _put_text(_canvas, l, x, y - (3.2 * mm * i), fontsize, font)
 
-    _put_item(pdf_name, fun)
+    _put_item(into, fun)

@@ -2,7 +2,6 @@ from io import BytesIO
 from PdfStampTools import (
     stamp_pdf,
     mm,
-    PdfReader,
     put_logo_with_text,
     put_image,
     put_text,
@@ -22,7 +21,7 @@ plwt_args = {
     "fontsize": 8,
 }
 pi_args = {
-    "pdf_name": pdf_name,
+    "into": pdf_name,
     "img_file": img_file,
     "img_width": 10 * mm,
     "x": 25 * mm,
@@ -30,7 +29,7 @@ pi_args = {
 }
 
 pt_args = {
-    "pdf_name": pdf_name,
+    "into": pdf_name,
     "text_lines": [
         "This work is licensed under xxx, aaa, bbb,",
         "yyy, and zzz.",
@@ -75,7 +74,7 @@ def test_stamp():
         start_num = stamp_pdf(
             item["input"],
             item["output"],
-            first_page_overlay=PdfReader(f),
+            first_page_overlay=f,
             encl="en_dash",
             start_num=start_num,
         )
