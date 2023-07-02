@@ -1,6 +1,6 @@
 # StampTools for logo and page number
 
-[![Test](https://github.com/Yuu-Miino-NUE/PdfStampTools/actions/workflows/test.yml/badge.svg)](https://github.com/Yuu-Miino-NUE/PdfStampTools/actions/workflows/test.yml)
+[![Test](https://github.com/Yuu-Miino-NUE/PdfStampTools/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/Yuu-Miino-NUE/PdfStampTools/actions/workflows/test.yml)
 
 * Can add logos and page numbers on PDF without stripping any hyper-links
 
