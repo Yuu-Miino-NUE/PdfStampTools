@@ -41,12 +41,12 @@ pt_args = {
 
 
 def test_put_logo_with_text_to_buffer():
-    put_logo_with_text(output=BytesIO(), **plwt_args)
+    put_logo_with_text(into=BytesIO(), **plwt_args)
 
 
 def test_put_logo_with_text_to_file():
     with open(pdf_name, "wb") as f:
-        put_logo_with_text(output=f, **plwt_args)
+        put_logo_with_text(into=f, **plwt_args)
 
 
 def test_put_image():
@@ -62,7 +62,7 @@ def test_stamp():
         f = open(pdf_name, "rb")
     except FileNotFoundError:  # If not exists template PDF for Logo
         f = BytesIO()
-        put_logo_with_text(output=f, **plwt_args)
+        put_logo_with_text(into=f, **plwt_args)
 
     # Stamp PDF (add logo and page numbers)
     item_list = [{"input": "./tests/input.pdf", "output": "./tests/output.pdf"}]

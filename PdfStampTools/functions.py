@@ -60,8 +60,8 @@ def _get_page_size(page: PageObject) -> tuple[float, float]:
 
 
 def stamp_pdf(
-    input: str,
-    output: str,
+    input: str | Path,
+    output: str | Path,
     first_page_overlay: IO | Path | None = None,
     encl: NumberEnclosure = "em_dash",
     start_num: int = 1,
@@ -72,16 +72,20 @@ def stamp_pdf(
 
     Parameters
     ----------
-    input : str
+    input : str, Path
         Filename of a base PDF.
-    output : str
+    output : str, Path
         Output filename of the stamped PDF.
+    first_page_overlay : IO, Path, optional
+        Filename of a PDF to overlay on the first page, by default None.
     encl : NumberEnclosure, optional
         Enclosure of a page number, by default "em_dash"
     start_num : int, optional
         Page number of the first page, by default 1
     num_height : float, optional
         Height of the position of page numbers, by default 10.5*mm
+    font : str, optional
+        Font of the page numbers, by default DEFAULT_FONT="Times-Roman".
 
     Returns
     -------
@@ -97,7 +101,7 @@ def stamp_pdf(
         _fpo = None
 
     try:
-        base_pdf = PdfReader(open(input, "rb"))
+        base_pdf = PdfReader(input)
     except:
         raise FileExistsError("No PDF found at input.")
 
@@ -117,13 +121,12 @@ def stamp_pdf(
             writer.add_page(_base)
 
         # Write to output file
-        with open(output, "wb") as f:
-            writer.write(f)
+        writer.write(output)
 
     return len(base_pdf.pages) + start_num
 
 
-def _get_height(path: str, width: float = 1 * cm) -> float:
+def _get_height(path: str | Path, width: float = 1 * cm) -> float:
     img = utils.ImageReader(path)
     iw, ih = img.getSize()
     aspect = ih / float(iw)
@@ -146,9 +149,9 @@ def _put_text(
 
 
 def put_logo_with_text(
-    output: BinaryIO,
+    into: BinaryIO,
     text_lines: list[str] = [],
-    logo_file: str | None = None,
+    logo_file: str | Path | None = None,
     pos_x: float = 84 * mm,
     pos_y: float = 272 * mm,
     logo_width: float = 18 * mm,
@@ -159,11 +162,11 @@ def put_logo_with_text(
 
     Parameters
     ----------
-    output : BinaryIO
-        Output buffer.
+    into : BinaryIO
+        Target buffer.
     text_lines : list[str], optional
         Text lines to put, by default []
-    logo_file : str | None, optional
+    logo_file : str, Path, None, optional
         Logo file, by default None
     pos_x : float, optional
         Horizontal position, by default 84*mm
@@ -173,10 +176,12 @@ def put_logo_with_text(
         Width of logo, by default 18*mm
     fontsize : int, optional
         Font size, by default 8
+    font: str, optional
+        Font name, by default DEFAULT_FONT="Times-Roman"
     """
 
     # Create destination canvas
-    _canvas = canvas.Canvas(output, pagesize=A4)
+    _canvas = canvas.Canvas(into, pagesize=A4)
 
     # Insert logo if not None
     if logo_file is not None:
@@ -223,11 +228,27 @@ def _put_item(input: IO | Path, fun: Callable[[canvas.Canvas], None]):
 
 def put_image(
     into: IO | Path,
-    img_file: str,
+    img_file: str | Path,
     img_width: float,
     x: float,
     y: float,
 ):
+    """Put image on a given buffer
+
+    Parameters
+    ----------
+    into : IO | Path
+        Target buffer.
+    img_file : str, Path
+        Image file.
+    img_width : float
+        Width of image.
+    x : float
+        Horizontal position.
+    y : float
+        Vertical position.
+    """
+
     def fun(_canvas):
         _canvas.drawImage(
             img_file,
@@ -249,6 +270,24 @@ def put_text(
     fontsize: int = 8,
     font: str = DEFAULT_FONT,
 ) -> None:
+    """Put text on a given buffer
+
+    Parameters
+    ----------
+    into : IO | Path
+        Target buffer.
+    text_lines : list[str]
+        Text lines to put.
+    x : float
+        Horizontal position.
+    y : float
+        Vertical position.
+    fontsize : int, optional
+        Font size, by default 8
+    font: str, optional
+        Font name, by default DEFAULT_FONT="Times-Roman"
+    """
+
     def fun(_canvas):
         for i, l in enumerate(text_lines):
             _put_text(_canvas, l, x, y - (3.2 * mm * i), fontsize, font)
