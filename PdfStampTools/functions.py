@@ -115,12 +115,12 @@ def stamp_pdf(
             all_overlays[0].merge_page(_fpo)
 
         # Put numbers on the base page and add it to the output
-        writer = PdfWriter()
         for _base, _overlay in zip(base_pdf.pages, all_overlays):
             _base.merge_page(_overlay)
-            writer.add_page(_base)
 
         # Write to output file
+        writer = PdfWriter()
+        writer.append(_base)
         writer.write(output)
 
     return len(base_pdf.pages) + start_num
