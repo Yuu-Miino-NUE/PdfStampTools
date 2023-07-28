@@ -120,7 +120,7 @@ def stamp_pdf(
 
         # Write to output file
         writer = PdfWriter()
-        writer.append(_base)
+        writer.append(base_pdf)
         writer.write(output)
 
     return len(base_pdf.pages) + start_num
